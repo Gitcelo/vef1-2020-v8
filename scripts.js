@@ -6,8 +6,7 @@
  */
 
 function code(str, shift, alphabet, type) {
-
-  let r = Number.parseInt(shift);
+  const r = Number.parseInt(shift, 10);
 
   /**
    * Kóðar streng með því að hliðra honum um n stök.
@@ -18,21 +17,17 @@ function code(str, shift, alphabet, type) {
    * @returns {string} Upprunalegi strengurinn hliðraður um n til hægri
    */
 
-  function encode(str, n, alphabet) {
-
+  function encode(n) {
     const upper = str.toLocaleUpperCase();
 
     let result = '';
-    for (let i = 0; i < str.length; i++) {
-      if (!alphabet.includes(upper[i])) {
-        continue;
+    for (let i = 0; i < str.length; i += 1) {
+      if (alphabet.includes(upper[i])) {
+        result += alphabet[(alphabet.indexOf(upper[i]) + n) % alphabet.length];
       }
-      result += alphabet[(alphabet.indexOf(upper[i]) + n) % alphabet.length];
     }
     return result;
   }
-
-
 
   /**
    * Afkóðar streng með því að hliðra honum um n stök.
@@ -42,16 +37,14 @@ function code(str, shift, alphabet, type) {
    * @param {string} alphabet Stafróf sem afkóða á út frá
    * @returns {string} Upprunalegi strengurinn hliðraður um n til vinstri
    */
-  function decode(str, n, alphabet) {
-    let m = alphabet.length - n;
-  return encode(str, m, alphabet);
+  function decode(n) {
+    const m = alphabet.length - n;
+    return encode(m);
   }
   if (type === 'encode') {
-    return encode(str, r, alphabet);
+    return encode(r);
   }
-  else {
-    return decode(str, r, alphabet);
-  }
+  return decode(r);
 }
 
 const Caesar = (() => {
@@ -64,22 +57,22 @@ const Caesar = (() => {
   // Default hliðrun, uppfært af "shift"
   let shift = 3;
 
-  function change(e) {
-    let str = document.getElementById('input').value;
-    let newAlph = document.getElementById("alphabet").value;
-    let upper = newAlph.toLocaleUpperCase();
+  function change() {
+    const str = document.getElementById('input').value;
+    const newAlph = document.getElementById('alphabet').value;
+    const upper = newAlph.toLocaleUpperCase();
     alphabet = upper;
     document.querySelector('.result').textContent = code(str, shift, alphabet, type);
   }
 
   function toggler(e) {
-    let str = document.getElementById('input').value;
+    const str = document.getElementById('input').value;
     type = e.target.value;
     document.querySelector('.result').textContent = code(str, shift, alphabet, type);
   }
 
   function shifted(e) {
-    let str = document.getElementById('input').value;
+    const str = document.getElementById('input').value;
     shift = e.target.value;
     document.querySelector('.shiftValue').textContent = shift;
     if (str === '') {
@@ -88,8 +81,8 @@ const Caesar = (() => {
     document.querySelector('.result').textContent = code(str, shift, alphabet, type);
   }
 
-  function write(e) {
-    let str = document.getElementById('input').value;
+  function write() {
+    const str = document.getElementById('input').value;
     document.querySelector('.result').textContent = code(str, shift, alphabet, type);
   }
 
