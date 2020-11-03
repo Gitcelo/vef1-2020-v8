@@ -5,51 +5,48 @@
  * Þ.e.a.s., ekki þarf að skrifa meðhöndlun á HTML elementum sem vantar
  */
 
-function code(str, shift, alphabet, type){
+function code(str, shift, alphabet, type) {
 
-let r = Number.parseInt(shift);
+  let r = Number.parseInt(shift);
 
-/**
- * Kóðar streng með því að hliðra honum um n stök.
- *
- * @param {string} str Strengur sem skal kóða, aðeins stafir í stafrófi
- * @param {number} n Hliðrun, heiltala á bilinu [0, lengd stafrófs]
- * @param {string} alphabet Stafróf sem kóða á út frá
- * @returns {string} Upprunalegi strengurinn hliðraður um n til hægri
- */
+  /**
+   * Kóðar streng með því að hliðra honum um n stök.
+   *
+   * @param {string} str Strengur sem skal kóða, aðeins stafir í stafrófi
+   * @param {number} n Hliðrun, heiltala á bilinu [0, lengd stafrófs]
+   * @param {string} alphabet Stafróf sem kóða á út frá
+   * @returns {string} Upprunalegi strengurinn hliðraður um n til hægri
+   */
 
-function encode(str, n, alphabet = '') {
+  function encode(str, n, alphabet) {
 
-  const upper = str.toLocaleUpperCase();
+    const upper = str.toLocaleUpperCase();
 
-  let result = '';
-  for (let i = 0; i < str.length; i++) {
-    result += alphabet[(alphabet.indexOf(upper[i]) + n) % alphabet.length];
+    let result = '';
+    for (let i = 0; i < str.length; i++) {
+      if (!alphabet.includes(upper[i])) {
+        continue;
+      }
+      result += alphabet[(alphabet.indexOf(upper[i]) + n) % alphabet.length];
+    }
+    return result;
   }
-  return result;
-}
 
 
 
-/**
- * Afkóðar streng með því að hliðra honum um n stök.
- *
- * @param {string} str Strengur sem skal afkóða, aðeins stafir í stafrófi
- * @param {number} n Hliðrun, heiltala á bilinu [0, lengd stafrófs]
- * @param {string} alphabet Stafróf sem afkóða á út frá
- * @returns {string} Upprunalegi strengurinn hliðraður um n til vinstri
- */
-function decode(str, n, alphabet = '') {
-  return str
-    .toLocaleUpperCase()
-    .split('')
-    .map(s => alphabet.indexOf(s) - n) // hliðruð staðsetning stafs
-    .map(i => i < 0 ? alphabet.length + i : i) // ef i verður neikvætt, förum aftast í stafróf
-    .map(i => alphabet[i])
-    .join('');
-}
-  debugger;
-  if(type === 'encode') {
+  /**
+   * Afkóðar streng með því að hliðra honum um n stök.
+   *
+   * @param {string} str Strengur sem skal afkóða, aðeins stafir í stafrófi
+   * @param {number} n Hliðrun, heiltala á bilinu [0, lengd stafrófs]
+   * @param {string} alphabet Stafróf sem afkóða á út frá
+   * @returns {string} Upprunalegi strengurinn hliðraður um n til vinstri
+   */
+  function decode(str, n, alphabet) {
+    let m = alphabet.length - n;
+  return encode(str, m, alphabet);
+  }
+  if (type === 'encode') {
     return encode(str, r, alphabet);
   }
   else {
@@ -68,9 +65,11 @@ const Caesar = (() => {
   let shift = 3;
 
   function change(e) {
-    let str = document.getElementById("alphabet").value;
-    str = str.toLocaleUpperCase();
-    alphabet = str;
+    let str = document.getElementById('input').value;
+    let newAlph = document.getElementById("alphabet").value;
+    let upper = newAlph.toLocaleUpperCase();
+    alphabet = upper;
+    document.querySelector('.result').textContent = code(str, shift, alphabet, type);
   }
 
   function toggler(e) {
@@ -81,18 +80,23 @@ const Caesar = (() => {
 
   function shifted(e) {
     let str = document.getElementById('input').value;
-    console.log(str);
     shift = e.target.value;
     document.querySelector('.shiftValue').textContent = shift;
-    if(str === '') {
+    if (str === '') {
       return;
     }
     document.querySelector('.result').textContent = code(str, shift, alphabet, type);
   }
 
+  function write(e) {
+    let str = document.getElementById('input').value;
+    document.querySelector('.result').textContent = code(str, shift, alphabet, type);
+  }
+
   function init(el) {
-    const alph = el.querySelector('.alphabet');
-    alph.addEventListener('keyup', change);
+    const input = el.querySelectorAll('[type=text]');
+    input[0].addEventListener('keyup', change);
+    input[1].addEventListener('input', write);
 
     const radio = document.querySelectorAll('input[type=radio]');
     radio[0].addEventListener('change', toggler);
@@ -100,8 +104,6 @@ const Caesar = (() => {
 
     const range = document.querySelector('input[type=range]');
     range.addEventListener('input', shifted);
-
-    const input = document.querySelector('input[type=range]');
   }
 
   return {
