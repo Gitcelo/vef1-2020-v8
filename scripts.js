@@ -5,7 +5,7 @@
  * Þ.e.a.s., ekki þarf að skrifa meðhöndlun á HTML elementum sem vantar
  */
 
-function code(str, shift, alphabet, type) {
+function code(str, shift, alphabet = '', type) {
   const r = Number.parseInt(shift, 10);
 
   /**
